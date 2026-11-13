@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Psycho-Shelter MAS v34.0 - Obsidian Pro</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #07090e; color: #f1f5f9; }
+        .obsidian-card { background: rgba(18, 24, 38, 0.85); backdrop-filter: blur(20px); border: 1px solid rgba(99, 102, 241, 0.18); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); }
+        .obsidian-card-glow { background: rgba(22, 30, 48, 0.9); backdrop-filter: blur(24px); border: 1px solid rgba(99, 102, 241, 0.35); box-shadow: 0 0 35px rgba(99, 102, 241, 0.12); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
+
+    <!-- Header -->
+    <header class="obsidian-card border-b border-indigo-900/30 sticky top-0 z-50 px-8 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-3.5">
+            <div class="bg-gradient-to-tr from-indigo-600 to-violet-600 p-2.5 rounded-2xl text-white shadow-lg shadow-indigo-500/25">
+                <i class="fa-solid fa-shield-heart text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-base font-bold tracking-tight text-white flex items-center">
+                    PSYCHO-SHELTER MAS <span class="ml-2.5 px-2.5 py-0.5 text-[10px] bg-indigo-500/20 text-indigo-300 rounded-full border border-indigo-500/35 font-semibold">v34.0 Obsidian Pro</span>
+                </h1>
+                <p class="text-xs text-slate-400 font-medium">Hệ Thống Đa Tác Nhân Phân Tích Véc-tơ & Trạm Nghiên Cứu Tâm Lý Học Đường (7 Giai Đoạn Chuẩn)</p>
+            </div>
+        </div>
+        <div class="flex items-center space-x-3">
+            <span class="px-3.5 py-1.5 bg-emerald-950/70 border border-emerald-500/30 text-emerald-400 text-xs rounded-full font-medium flex items-center shadow-inner">
+                <i class="fa-solid fa-circle text-[7px] animate-pulse mr-2 text-emerald-400"></i> Vector Engine Ready
+            </span>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-6 space-y-8">
+
+        <!-- Navigation Tabs -->
+        <div class="flex space-x-3 border-b border-slate-800 pb-3">
+            <button onclick="switchTab('baseline')" id="btn-baseline" class="px-6 py-3 rounded-2xl font-semibold text-xs tracking-wide transition-all bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-600/25 flex items-center cursor-pointer">
+                <i class="fa-solid fa-chart-line mr-2 text-indigo-200"></i> 1. BIỂU ĐỒ CHUẨN (7 GIAI ĐOẠN NCKH)
+            </button>
+            <button onclick="switchTab('dynamic')" id="btn-dynamic" class="px-6 py-3 rounded-2xl font-semibold text-xs tracking-wide transition-all obsidian-card text-slate-300 hover:text-white hover:border-indigo-500/40 flex items-center cursor-pointer">
+                <i class="fa-solid fa-wand-magic-sparkles mr-2 text-indigo-400"></i> 2. TRẠM ĐỘNG (BẢNG TRỐNG & THEO DÕI THỰC TẾ)
+            </button>
+        </div>
+
+        <!-- TAB 1: BASELINE DASHBOARD -->
+        <section id="tab-baseline" class="space-y-6">
+            <div class="obsidian-card-glow rounded-3xl p-6 shadow-2xl">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="text-sm font-bold text-white flex items-center">
+                            <i class="fa-solid fa-chart-area text-indigo-400 mr-2.5"></i> Biểu Đồ Chuẩn: Tiến Trình Phục Hồi Tâm Lý 7 Giai Đoạn Chuyên Sâu
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">Chuẩn hóa từ mô hình 5 giai đoạn sang khung 7 giai đoạn chi tiết phục vụ đề tài nghiên cứu khoa học học đường.</p>
+                    </div>
+                    <button onclick="exportBaselineCSV()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-semibold rounded-xl text-slate-200 transition border border-indigo-500/20 shadow-md cursor-pointer">
+                        <i class="fa-solid fa-file-csv mr-1.5 text-indigo-400"></i> Xuất CSV Mẫu 7 Giai Đoạn
+                    </button>
+                </div>
+                
+                <div class="bg-slate-950/80 p-4 rounded-2xl border border-slate-800/80 h-[380px] relative shadow-inner">
+                    <canvas id="baselineChart"></canvas>
+                </div>
+            </div>
+
+            <div class="obsidian-card rounded-3xl p-6 shadow-2xl overflow-x-auto">
+                <h3 class="text-xs font-bold text-white mb-4 flex items-center uppercase tracking-wider">
+                    <i class="fa-solid fa-layer-group text-indigo-400 mr-2.5"></i> Bảng Ánh Xạ 7 Giai Đoạn Phục Hồi & Chỉ Số Chuyên Sâu
+                </h3>
+                <table class="w-full text-left border-collapse text-xs min-w-[900px]">
+                    <thead>
+                        <tr class="bg-slate-900/90 text-indigo-300 border-b border-slate-800">
+                            <th class="p-3.5 font-semibold w-24">Giai Đoạn</th>
+                            <th class="p-3.5 font-semibold w-56">Tên Nấc Thang Phục Hồi</th>
+                            <th class="p-3.5 font-semibold text-center w-28">Chỉ Số MI (%)</th>
+                            <th class="p-3.5 font-semibold text-center w-28">Tự Chủ (%)</th>
+                            <th class="p-3.5 font-semibold text-center w-28">Hỗ Trợ (%)</th>
+                            <th class="p-3.5 font-semibold">Cụm Vector Đặc Trưng Ngôn Ngữ (TF-IDF Prototype)</th>
+                            <th class="p-3.5 font-semibold">Mục Tiêu Can Thiệp Hệ Thống MAS</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800/60 text-slate-300">
+                        <tr class="hover:bg-indigo-950/20 transition align-top">
+                            <td class="p-3.5 font-bold text-indigo-400">Giai đoạn 1</td>
+                            <td class="p-3.5 font-medium text-white">Bị thao túng nặng (Mất nhận thức ranh giới)</td>
+                            <td class="p-3.5 text-center text-rose-400 font-bold">85% - 100%</td>
+                            <td class="p-3.5 text-center">0% - 15%</td>
+                            <td class="p-3.5 text-center">0%</td>
+                            <td class="p-3.5 text-slate-400">"tất cả là lỗi của tôi, tôi kém cỏi, đáng bị chê bai, không dám nhìn mặt ai, bất lực hoàn toàn"</td>
+                            <td class="p-3.5 text-slate-400">Cắt đứt vòng lặp tự trách; cung cấp không gian trú ẩn an toàn và nhận diện rủi ro cao.</td>
+                        </tr>
+                        <tr class="hover:bg-indigo-950/20 transition align-top">
+                            <td class="p-3.5 font-bold text-indigo-400">Giai đoạn 2</td>
+                            <td class="p-3.5 font-medium text-white">Bị thao túng nhưng có ít ý thức (Nghi ngờ & Hoang mang)</td>
+                            <td class="p-3.5 text-center text-rose-400 font-bold">65% - 84%</td>
+                            <td class="p-3.5 text-center">16% - 45%</td>
+                            <td class="p-3.5 text-center">0% - 10%</td>
+                            <td class="p-3.5 text-slate-400">"tôi thấy hơi ấm ức hình như họ đang quá đáng nhưng không biết mình có nhạy cảm quá không"</td>
+                            <td class="p-3.5 text-slate-400">Củng cố trực giác cá nhân; giúp phân biệt giữa góp ý xây dựng và ngụy biện 'trò đùa'.</td>
+                        </tr>
+                        <tr class="hover:bg-indigo-950/20 transition align-top">
+                            <td class="p-3.5 font-bold text-indigo-400">Giai đoạn 3</td>
+                            <td class="p-3 font-medium text-white">Nhận diện ranh giới xâm phạm ngầm (Boundary Breach)</td>
+                            <td class="p-3.5 text-center text-amber-400 font-bold">50% - 64%</td>
+                            <td class="p-3.5 text-center">46% - 60%</td>
+                            <td class="p-3.5 text-center">11% - 20%</td>
+                            <td class="p-3.5 text-slate-400">"họ đang cố tình bêu rếu và hạ thấp mình sau lưng để làm trò vui cho người khác"</td>
+                            <td class="p-3.5 text-slate-400">Xác lập ranh giới số hóa; ngăn chặn các hành vi tẩy chay gián tiếp và cô lập mạng xã hội.</td>
+                        </tr>
+                        <tr class="hover:bg-indigo-950/20 transition align-top">
+                            <td class="p-3.5 font-bold text-indigo-400">Giai đoạn 4</td>
+                            <td class="p-3 font-medium text-white">Tỉnh thức nhưng chưa dám phản kháng (Hiểu rõ nhưng e ngại)</td>
+                            <td class="p-3 text-center text-amber-400 font-bold">40% - 49%</td>
+                            <td class="p-3 text-center">61% - 75%</td>
+                            <td class="p-3.5 text-center">21% - 30%</td>
+                            <td class="p-3.5 text-slate-400">"tôi biết họ đang cố tình bêu rếu và thao túng mình nhưng sợ lên tiếng sẽ bị cô lập thêm"</td>
+                            <td class="p-3.5 text-slate-400">Trang bị kịch bản giao tiếp phản vệ (Defense Tips); rèn luyện sự bình tĩnh trước áp lực nhóm.</td>
+                        </tr>
+                        <tr class="hover:bg-indigo-950/20 transition align-top">
+                            <td class="p-3.5 font-bold text-indigo-400">Giai đoạn 5</td>
+                            <td class="p-3 font-medium text-white">Dám đứng lên nói (Thiết lập ranh giới chủ động)</td>
+                            <td class="p-3 text-center text-emerald-400 font-bold">12% - 39%</td>
+                            <td class="p-3 text-center">76% - 94%</td>
+                            <td class="p-3.5 text-center">31% - 65%</td>
+                            <td class="p-3.5 text-slate-400">"tôi cảm thấy bản thân ổn rồi, biết cách từ chối và không để bản thân bị thao túng tâm lý nữa"</td>
+                            <td class="p-3.5 text-slate-400">Khẳng định chủ quyền bản thân; củng cố sự tự tin khi đối diện trực tiếp với hành vi sai trái.</td>
+                        </tr>
+                        <tr class="hover:bg-indigo-950/20 transition align-top">
+                            <td class="p-3.5 font-bold text-indigo-400">Giai đoạn 6</td>
+                            <td class="p-3 font-medium text-white">Miễn nhiễm độc hại tâm lý & Tự chủ vững bền</td>
+                            <td class="p-3 text-center text-emerald-400 font-bold">5% - 11%</td>
+                            <td class="p-3 text-center">95% - 98%</td>
+                            <td class="p-3 text-center">66% - 85%</td>
+                            <td class="p-3 text-slate-400">"nhân phẩm của tôi không bị định đoạt bởi lời đồn thổi vô căn cứ hay sự công kích cá nhân"</td>
+                            <td class="p-3.5 text-slate-400">Củng cố nội lực vững chắc; duy trì trạng thái miễn nhiễm trước các tác nhân độc hại từ môi trường xung quanh.</td>
+                        </tr>
+                        <tr class="hover:bg-indigo-950/20 transition align-top">
+                            <td class="p-3.5 font-bold text-indigo-400">Giai đoạn 7</td>
+                            <td class="p-3 font-medium text-white">Đủ vững vàng để nâng đỡ người khác (Lan tỏa & Bảo vệ)</td>
+                            <td class="p-3 text-center text-emerald-400 font-bold">0% - 4%</td>
+                            <td class="p-3 text-center">99% - 100%</td>
+                            <td class="p-3 text-center">86% - 100%</td>
+                            <td class="p-3 text-slate-400">"tôi muốn chia sẻ cách vượt qua áp lực và đứng ra bảo vệ những bạn đang bị trêu chọc cô lập"</td>
+                            <td class="p-3.5 text-slate-400">Kết nối mạng lưới đồng đẳng; phát huy vai trò người dẫn dắt tích cực trong trường học.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- TAB 2: DYNAMIC BLANK TRACKER & LIVE TESTING -->
+        <section id="tab-dynamic" class="hidden space-y-6">
+            
+            <!-- Top Row: Compact Full-width Dynamic Chart Tracker -->
+            <div class="obsidian-card-glow rounded-3xl p-5 shadow-2xl">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-xs font-bold text-white flex items-center">
+                        <i class="fa-solid fa-chart-line text-indigo-400 mr-2"></i> Biểu Đồ Động Thực Tế (Khởi Đầu Trống - Cập Nhật Theo Thời Gian Thực)
+                    </h3>
+                    <button onclick="resetDynamicChart()" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded-xl transition border border-slate-700 cursor-pointer">
+                        Làm sạch biểu đồ
+                    </button>
+                </div>
+                <div class="bg-slate-950/90 p-3 rounded-2xl border border-slate-800 h-[220px] relative shadow-inner">
+                    <canvas id="dynamicChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Bottom Grid: Input & Webcam on Left, Results & Spacious Horizontal Log Table on Right -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Left Column (5 Cols) -->
+                <div class="lg:col-span-5 space-y-6">
+                    
+                    <!-- Agent-Vision Working Webcam Card -->
+                    <div class="obsidian-card rounded-3xl p-5 shadow-xl space-y-4">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-xs font-bold text-white tracking-wider uppercase flex items-center">
+                                <i class="fa-solid fa-video text-indigo-400 mr-2"></i> Agent-Vision (Webcam Sinh Học)
+                            </h3>
+                            <button onclick="toggleWebcam()" id="webcam-btn" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-semibold rounded-xl transition shadow-md shadow-indigo-600/25 cursor-pointer">
+                                Bật Camera
+                            </button>
+                        </div>
+                        <div class="relative bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 h-36 flex items-center justify-center shadow-inner">
+                            <video id="webcam" autoplay playsinline class="w-full h-full object-cover hidden"></video>
+                            <canvas id="snapshot-canvas" class="hidden"></canvas>
+                            <div id="cam-placeholder" class="text-center text-slate-500 text-xs">
+                                <i class="fa-solid fa-camera-retro text-2xl mb-1 text-slate-600"></i>
+                                <p>Sẵn sàng kết nối trực tiếp</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center text-xs text-slate-300 bg-slate-950/70 p-3 rounded-2xl border border-slate-800/80">
+                            <span>Chỉ số tỉnh táo (Pixel):</span>
+                            <span id="alertness-badge" class="font-bold text-emerald-400">Chưa đo</span>
+                        </div>
+                        <button onclick="capturePixelSnapshot()" id="capture-btn" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold rounded-xl text-xs transition border border-indigo-500/20 shadow-sm hidden cursor-pointer">
+                            <i class="fa-solid fa-camera mr-1.5 text-indigo-400"></i> Chụp, Đo Pixel & Tắt Cam Tự Động
+                        </button>
+                    </div>
+
+                    <!-- Agent-NLP Input Card -->
+                    <div class="obsidian-card rounded-3xl p-5 shadow-xl space-y-4">
+                        <h3 class="text-xs font-bold text-white tracking-wider uppercase flex items-center">
+                            <i class="fa-solid fa-brain text-indigo-400 mr-2"></i> Agent-NLP (Phân Tích Véc-tơ Ngữ Nghĩa)
+                        </h3>
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1.5 font-medium">Nhập tâm sự hoặc chọn mẫu nhanh chuẩn 7 giai đoạn:</label>
+                            <textarea id="user-input" rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-3 text-xs text-slate-100 focus:outline-none focus:border-indigo-500 placeholder-slate-600 shadow-inner" placeholder="Ví dụ: Tôi cảm thấy bản thân ổn rồi, biết cách từ chối..."></textarea>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <span class="text-[11px] text-slate-400 font-semibold">Mẫu tình huống kiểm thử nhanh (Đủ 7 giai đoạn):</span>
+                            <div class="grid grid-cols-1 gap-1.5 max-h-48 overflow-y-auto pr-1">
+                                <button onclick="loadTemplate(1)" class="text-left text-[11px] bg-slate-950/70 hover:bg-indigo-950/30 p-2 rounded-xl text-slate-300 border border-slate-800 transition cursor-pointer">
+                                    🔴 GĐ 1: "Tất cả là lỗi của tôi, kém cỏi, đáng bị chê bai..."
+                                </button>
+                                <button onclick="loadTemplate(2)" class="text-left text-[11px] bg-slate-950/70 hover:bg-indigo-950/30 p-2 rounded-xl text-slate-300 border border-slate-800 transition cursor-pointer">
+                                    🟠 GĐ 2: "Tôi thấy hơi ấm ức nhưng sợ mình nhạy cảm quá..."
+                                </button>
+                                <button onclick="loadTemplate(3)" class="text-left text-[11px] bg-slate-950/70 hover:bg-indigo-950/30 p-2 rounded-xl text-slate-300 border border-slate-800 transition cursor-pointer">
+                                    🟡 GĐ 3: "Họ đang cố tình bêu rếu và hạ thấp mình sau lưng..."
+                                </button>
+                                <button onclick="loadTemplate(4)" class="text-left text-[11px] bg-slate-950/70 hover:bg-indigo-950/30 p-2 rounded-xl text-slate-300 border border-slate-800 transition cursor-pointer">
+                                    🟡 GĐ 4: "Tôi biết họ thao túng nhưng sợ lên tiếng bị cô lập..."
+                                </button>
+                                <button onclick="loadTemplate(5)" class="text-left text-[11px] bg-slate-950/70 hover:bg-indigo-950/30 p-2 rounded-xl text-slate-300 border border-slate-800 transition cursor-pointer">
+                                    🟢 GĐ 5: "Tôi cảm thấy bản thân ổn rồi, biết cách từ chối..."
+                                </button>
+                                <button onclick="loadTemplate(6)" class="text-left text-[11px] bg-slate-950/70 hover:bg-indigo-950/30 p-2 rounded-xl text-slate-300 border border-slate-800 transition cursor-pointer">
+                                    🟢 GĐ 6: "Nhân phẩm của tôi không định đoạt bởi lời đồn..."
+                                </button>
+                                <button onclick="loadTemplate(7)" class="text-left text-[11px] bg-slate-950/70 hover:bg-indigo-950/30 p-2 rounded-xl text-slate-300 border border-slate-800 transition cursor-pointer">
+                                    🔵 GĐ 7: "Tôi muốn chia sẻ cách vượt qua để bảo vệ bạn khác..."
+                                </button>
+                            </div>
+                        </div>
+
+                        <button onclick="runVectorAnalysis()" class="w-full py-3 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold rounded-2xl text-xs shadow-lg shadow-indigo-600/30 transition flex items-center justify-center cursor-pointer">
+                            <i class="fa-solid fa-microchip mr-2"></i> Chạy Phân Tích Véc-tơ & Vẽ Điểm Biểu Đồ
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Column (7 Cols): Results & Spacious Horizontal Log Table with Full Text Wrapping (No Ellipsis) -->
+                <div class="lg:col-span-7 space-y-6">
+                    
+                    <!-- Results Card -->
+                    <div class="obsidian-card rounded-3xl p-6 shadow-2xl space-y-4">
+                        <h3 class="text-sm font-bold text-white flex items-center">
+                            <i class="fa-solid fa-clipboard-check text-indigo-400 mr-2"></i> Kết Quả Đánh Giá Từ Hệ Thống MAS
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-slate-950/85 p-3.5 rounded-2xl border border-slate-800">
+                                <span class="text-[11px] text-slate-400 block mb-1">Giai Đoạn Phục Hồi</span>
+                                <span id="res-stage" class="text-xs font-bold text-indigo-300">Chưa có dữ liệu</span>
+                            </div>
+                            <div class="bg-slate-950/85 p-3.5 rounded-2xl border border-slate-800">
+                                <span class="text-[11px] text-slate-400 block mb-1">Mục Tiêu Can Thiệp (MAS)</span>
+                                <span id="res-behavior" class="text-xs font-bold text-slate-200">Chưa có dữ liệu</span>
+                            </div>
+                            <div class="bg-slate-950/85 p-3.5 rounded-2xl border border-slate-800 flex justify-between items-center">
+                                <div>
+                                    <span class="text-[11px] text-slate-400 block mb-1">MI (%)</span>
+                                    <span id="res-mi" class="text-xs font-bold text-rose-400">0.0%</span>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] text-slate-400 block mb-1">Tự Chủ</span>
+                                    <span id="res-emp" class="text-xs font-bold text-emerald-400">0.0%</span>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] text-slate-400 block mb-1">Hỗ Trợ</span>
+                                    <span id="res-sup" class="text-xs font-bold text-sky-400">0.0%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 pt-2">
+                            <div class="bg-slate-950/90 p-3.5 rounded-2xl border border-slate-800">
+                                <span class="text-[11px] text-indigo-400 font-semibold block mb-1"><i class="fa-solid fa-circle-question mr-1"></i> Câu hỏi gỡ rối tư duy (Socratic):</span>
+                                <p id="res-socratic" class="text-xs text-slate-300 italic">"Hãy nhập nội dung và bấm phân tích để hiển thị kết quả..."</p>
+                            </div>
+                            <div class="bg-slate-950/90 p-3.5 rounded-2xl border border-slate-800">
+                                <span class="text-[11px] text-indigo-400 font-semibold block mb-1"><i class="fa-solid fa-shield-halved mr-1"></i> Gợi ý phản vệ mẫu (Defense Tip):</span>
+                                <p id="res-defense" class="text-xs text-slate-200 font-medium">"Hãy nhập nội dung và bấm phân tích để hiển thị kết quả..."</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Spacious Horizontal Log Table Card (No Ellipsis, Full Text Wrapped) -->
+                    <div class="obsidian-card rounded-3xl p-6 shadow-2xl space-y-4">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-sm font-bold text-white flex items-center">
+                                <i class="fa-solid fa-table-list text-indigo-400 mr-2"></i> Bảng Nhật Ký Thực Nghiệm (`student_experiment_log.csv`)
+                            </h3>
+                            <button onclick="exportDynamicCSV()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-semibold rounded-xl text-slate-200 transition border border-indigo-500/20 shadow-sm cursor-pointer">
+                                <i class="fa-solid fa-download mr-1 text-indigo-400"></i> Tải file CSV
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto max-h-80">
+                            <table class="w-full text-left border-collapse text-xs min-w-[780px]">
+                                <thead class="bg-slate-900 text-indigo-300 sticky top-0 border-b border-slate-800">
+                                    <tr>
+                                        <th class="p-3 font-semibold whitespace-nowrap text-center w-14">STT</th>
+                                        <th class="p-3 font-semibold whitespace-nowrap w-48">Giai Đoạn Phục Hồi</th>
+                                        <th class="p-3 font-semibold text-center whitespace-nowrap w-20">MI (%)</th>
+                                        <th class="p-3 font-semibold text-center whitespace-nowrap w-20">Tự Chủ (%)</th>
+                                        <th class="p-3 font-semibold text-center whitespace-nowrap w-20">Hỗ Trợ (%)</th>
+                                        <th class="p-3 font-semibold">Nội Dung Thực Nghiệm</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="log-table-body" class="divide-y divide-slate-800 text-slate-300">
+                                    <tr>
+                                        <td colspan="6" class="p-4 text-center text-slate-500 italic">Biểu đồ & Bảng đang trống. Hãy nhập tâm sự và bấm phân tích để hệ thống bắt đầu vẽ!</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="obsidian-card border-t border-slate-800 py-4 text-center text-xs text-slate-500">
+        Psycho-Shelter MAS v34.0 - Đề tài Nghiên cứu Khoa học Phổ thông Trung học (7 Giai Đoạn Chuẩn)
+    </footer>
+
+    <script>
+        let baselineChart = null;
+        let dynamicChart = null;
+        let experimentLogs = [];
+        let webcamStream = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const baselineCtx = document.getElementById('baselineChart').getContext('2d');
+            baselineChart = new Chart(baselineCtx, {
+                type: 'line',
+                data: {
+                    labels: ['GĐ 1', 'GĐ 2', 'GĐ 3', 'GĐ 4', 'GĐ 5', 'GĐ 6', 'GĐ 7'],
+                    datasets: [
+                        {
+                            label: 'Chỉ Số Bị Thao Túng (MI %)',
+                            data: [95, 75, 58, 45, 25, 8, 2],
+                            borderColor: '#f43f5e',
+                            backgroundColor: 'rgba(244, 63, 94, 0.08)',
+                            fill: true,
+                            tension: 0.3,
+                            borderWidth: 3
+                        },
+                        {
+                            label: 'Chỉ Số Tự Chủ & Tỉnh Thức (%)',
+                            data: [5, 30, 52, 68, 85, 96, 100],
+                            borderColor: '#34d399',
+                            backgroundColor: 'rgba(52, 211, 153, 0.08)',
+                            fill: true,
+                            tension: 0.3,
+                            borderWidth: 3
+                        },
+                        {
+                            label: 'Chỉ Số Hỗ Trợ Cộng Đồng (%)',
+                            data: [0, 5, 15, 25, 48, 75, 95],
+                            borderColor: '#38bdf8',
+                            backgroundColor: 'rgba(56, 189, 248, 0.08)',
+                            fill: true,
+                            tension: 0.3,
+                            borderWidth: 3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#cbd5e1', font: { family: 'Plus Jakarta Sans', size: 11 } } }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#64748b' }, grid: { color: 'rgba(51, 65, 85, 0.3)' } },
+                        y: { min: 0, max: 100, ticks: { color: '#64748b' }, grid: { color: 'rgba(51, 65, 85, 0.3)' } }
+                    }
+                }
+            });
+
+            const dynamicCtx = document.getElementById('dynamicChart').getContext('2d');
+            dynamicChart = new Chart(dynamicCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        { label: 'Chỉ Số MI (%)', data: [], borderColor: '#f43f5e', borderWidth: 2, tension: 0.3 },
+                        { label: 'Tự Chủ (%)', data: [], borderColor: '#34d399', borderWidth: 2, tension: 0.3 },
+                        { label: 'Hỗ Trợ (%)', data: [], borderColor: '#38bdf8', borderWidth: 2, tension: 0.3 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#cbd5e1', font: { size: 10 } } } },
+                    scales: {
+                        x: { ticks: { color: '#64748b' }, grid: { color: 'rgba(51, 65, 85, 0.3)' } },
+                        y: { min: 0, max: 100, ticks: { color: '#64748b' }, grid: { color: 'rgba(51, 65, 85, 0.3)' } }
+                    }
+                }
+            });
+        });
+
+        function switchTab(tab) {
+            const btnBaseline = document.getElementById('btn-baseline');
+            const btnDynamic = document.getElementById('btn-dynamic');
+            const tabBaseline = document.getElementById('tab-baseline');
+            const tabDynamic = document.getElementById('tab-dynamic');
+
+            if (tab === 'baseline') {
+                btnBaseline.className = "px-6 py-3 rounded-2xl font-semibold text-xs tracking-wide transition-all bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-600/25 flex items-center cursor-pointer";
+                btnDynamic.className = "px-6 py-3 rounded-2xl font-semibold text-xs tracking-wide transition-all obsidian-card text-slate-300 hover:text-white hover:border-indigo-500/40 flex items-center cursor-pointer";
+                tabBaseline.classList.remove('hidden');
+                tabDynamic.classList.add('hidden');
+                if(baselineChart) baselineChart.resize();
+            } else {
+                btnDynamic.className = "px-6 py-3 rounded-2xl font-semibold text-xs tracking-wide transition-all bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-600/25 flex items-center cursor-pointer";
+                btnBaseline.className = "px-6 py-3 rounded-2xl font-semibold text-xs tracking-wide transition-all obsidian-card text-slate-300 hover:text-white hover:border-indigo-500/40 flex items-center cursor-pointer";
+                tabDynamic.classList.remove('hidden');
+                tabBaseline.classList.add('hidden');
+                if(dynamicChart) dynamicChart.resize();
+            }
+        }
+
+        function resetDynamicChart() {
+            if(!dynamicChart) return;
+            dynamicChart.data.labels = [];
+            dynamicChart.data.datasets[0].data = [];
+            dynamicChart.data.datasets[1].data = [];
+            dynamicChart.data.datasets[2].data = [];
+            dynamicChart.update();
+            experimentLogs = [];
+            document.getElementById('log-table-body').innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500 italic">Biểu đồ & Bảng đang trống. Hãy nhập tâm sự và bấm phân tích để hệ thống bắt đầu vẽ!</td></tr>`;
+            document.getElementById('res-stage').textContent = "Chưa có dữ liệu";
+            document.getElementById('res-behavior').textContent = "Chưa có dữ liệu";
+            document.getElementById('res-mi').textContent = "0.0%";
+            document.getElementById('res-emp').textContent = "0.0%";
+            document.getElementById('res-sup').textContent = "0.0%";
+            document.getElementById('res-socratic').textContent = `"Hãy nhập nội dung và bấm phân tích để hiển thị kết quả..."`;
+            document.getElementById('res-defense').textContent = `"Hãy nhập nội dung và bấm phân tích để hiển thị kết quả..."`;
+        }
+
+        async function toggleWebcam() {
+            const video = document.getElementById('webcam');
+            const placeholder = document.getElementById('cam-placeholder');
+            const btn = document.getElementById('webcam-btn');
+            const captureBtn = document.getElementById('capture-btn');
+            const badge = document.getElementById('alertness-badge');
+
+            if (!webcamStream) {
+                try {
+                    webcamStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    video.srcObject = webcamStream;
+                    video.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                    captureBtn.classList.remove('hidden');
+                    btn.textContent = "Tắt Camera";
+                    btn.className = "px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white text-[11px] font-semibold rounded-xl transition shadow-md shadow-rose-600/25 cursor-pointer";
+                    badge.textContent = "Đang kết nối trực tiếp";
+                } catch (err) {
+                    alert("Trình duyệt hoặc hệ thống đang chặn quyền truy cập Webcam. Vui lòng bấm vào biểu tượng ổ khóa cạnh thanh URL để cho phép Camera!");
+                    badge.textContent = "Bị chặn quyền";
+                }
+            } else {
+                stopWebcam();
+            }
+        }
+
+        function stopWebcam() {
+            if (webcamStream) {
+                webcamStream.getTracks().forEach(track => track.stop());
+                webcamStream = null;
+            }
+            const video = document.getElementById('webcam');
+            const placeholder = document.getElementById('cam-placeholder');
+            const btn = document.getElementById('webcam-btn');
+            const captureBtn = document.getElementById('capture-btn');
+            const badge = document.getElementById('alertness-badge');
+
+            video.classList.add('hidden');
+            placeholder.classList.remove('hidden');
+            captureBtn.classList.add('hidden');
+            btn.textContent = "Bật Camera";
+            btn.className = "px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-semibold rounded-xl transition shadow-md shadow-indigo-600/25 cursor-pointer";
+        }
+
+        function capturePixelSnapshot() {
+            const video = document.getElementById('webcam');
+            const canvas = document.getElementById('snapshot-canvas');
+            const badge = document.getElementById('alertness-badge');
+
+            if (!webcamStream) {
+                alert("Vui lòng bật Camera trước khi chụp!");
+                return;
+            }
+
+            canvas.width = video.videoWidth || 320;
+            canvas.height = video.videoHeight || 240;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            let totalBrightness = 0;
+            let data = imgData.data;
+            for (let i = 0; i < data.length; i += 4) {
+                let r = data[i], g = data[i+1], b = data[i+2];
+                let brightness = 0.299 * r + 0.587 * g + 0.114 * b;
+                totalBrightness += brightness;
+            }
+            let avgBrightness = totalBrightness / (data.length / 4);
+            let alertnessScore = Math.min(100, Math.max(15, (avgBrightness / 255) * 100));
+
+            badge.textContent = `${alertnessScore.toFixed(1)} điểm (Tỉnh táo)`;
+            stopWebcam();
+
+            alert(`[Agent-Vision] Đã đo độ sáng khung hình thực tế thành công!
+- Điểm tỉnh táo sinh học: ${alertnessScore.toFixed(1)}/100
+- Webcam đã được tự động tắt.`);
+        }
+
+        function loadTemplate(stage) {
+            const input = document.getElementById('user-input');
+            if (stage === 1) {
+                input.value = "tất cả là lỗi của tôi, tôi kém cỏi, đáng bị chê bai, không dám nhìn mặt ai, bất lực hoàn toàn";
+            } else if (stage === 2) {
+                input.value = "tôi thấy hơi ấm ức hình như họ đang quá đáng nhưng không biết mình có nhạy cảm quá không";
+            } else if (stage === 3) {
+                input.value = "họ đang cố tình bêu rếu và hạ thấp mình sau lưng để làm trò vui cho người khác";
+            } else if (stage === 4) {
+                input.value = "tôi biết họ đang cố tình bêu rếu và thao túng mình nhưng sợ lên tiếng sẽ bị cô lập thêm";
+            } else if (stage === 5) {
+                input.value = "tôi cảm thấy bản thân ổn rồi, biết cách từ chối và không để bản thân bị thao túng tâm lý nữa";
+            } else if (stage === 6) {
+                input.value = "nhân phẩm của tôi không bị định đoạt bởi lời đồn thổi vô căn cứ hay sự công kích cá nhân";
+            } else if (stage === 7) {
+                input.value = "tôi muốn chia sẻ cách vượt qua áp lực và đứng ra bảo vệ những bạn đang bị trêu chọc cô lập";
+            }
+        }
+
+        function runVectorAnalysis() {
+            const text = document.getElementById('user-input').value.trim();
+            if (!text) {
+                alert("Vui lòng nhập nội dung tâm sự hoặc chọn mẫu tình huống trước khi phân tích!");
+                return;
+            }
+
+            let stageName = "";
+            let behavior = "";
+            let mi = 0, emp = 0, sup = 0;
+            let socratic = "";
+            let defense = "";
+
+            const lower = text.toLowerCase();
+            if (lower.includes('lỗi của tôi') || lower.includes('kém cỏi') || lower.includes('đáng bị') || lower.includes('không dám nhìn mặt')) {
+                stageName = "GĐ 1: Bị thao túng nặng (Mất nhận thức ranh giới)";
+                behavior = "Cắt đứt vòng lặp tự trách; cung cấp không gian trú ẩn an toàn và nhận diện rủi ro cao.";
+                mi = 92.0; emp = 8.0; sup = 0.0;
+                socratic = "Việc tự nhận toàn bộ lỗi lầm và cảm thấy kém cỏi có thực sự công bằng với những gì bạn đã chịu đựng không?";
+                defense = "Tôi không phải là nguyên nhân gây ra sự vô ý thức của người khác. Tôi xứng đáng được tôn trọng.";
+            } else if (lower.includes('ấm ức') || lower.includes('nhạy cảm quá')) {
+                stageName = "GĐ 2: Bị thao túng nhưng có ít ý thức (Nghi ngờ & Hoang mang)";
+                behavior = "Củng cố trực giác cá nhân; giúp phân biệt giữa góp ý xây dựng và ngụy biện 'trò đùa'.";
+                mi = 75.0; emp = 30.0; sup = 5.0;
+                socratic = "Cảm giác ấm ức đó đang muốn báo hiệu cho bạn điều gì về giới hạn mà người khác vừa vượt qua?";
+                defense = "Trực giác của tôi hoàn toàn chính xác. Cảm xúc khó chịu này là minh chứng rằng tôi đang bị đối xử bất công.";
+            } else if (lower.includes('bêu rếu') || lower.includes('hạ thấp mình sau lưng')) {
+                stageName = "GĐ 3: Nhận diện ranh giới xâm phạm ngầm (Boundary Breach)";
+                behavior = "Xác lập ranh giới số hóa; ngăn chặn các hành vi tẩy chay gián tiếp và cô lập mạng xã hội.";
+                mi = 58.0; emp = 52.0; sup = 15.0;
+                socratic = "Những lời bàn tán vô căn cứ từ sau lưng thực ra phản ánh điều gì về nhân cách của người nói?";
+                defense = "Tôi sống bằng giá trị thực của mình chứ không qua lời đồn thổi. Hãy dừng ngay việc bàn tán vô căn cứ.";
+            } else if (lower.includes('sợ lên tiếng sẽ bị cô lập') || lower.includes('thao túng mình nhưng sợ')) {
+                stageName = "GĐ 4: Tỉnh thức nhưng chưa dám phản kháng (Hiểu rõ nhưng e ngại)";
+                behavior = "Trang bị kịch bản giao tiếp phản vệ (Defense Tips); rèn luyện sự bình tĩnh trước áp lực nhóm.";
+                mi = 45.0; emp = 68.0; sup = 25.0;
+                socratic = "Yếu tố nào đang khiến bạn ngần ngại chưa dám lên tiếng bảo vệ không gian của chính mình?";
+                defense = "Cảm xúc của tôi là chính đáng. Tôi có quyền lên tiếng khi cảm thấy không được tôn trọng.";
+            } else if (lower.includes('ổn rồi') || lower.includes('từ chối') || lower.includes('không để bản thân bị thao túng')) {
+                stageName = "GĐ 5: Dám đứng lên nói (Thiết lập ranh giới chủ động)";
+                behavior = "Khẳng định chủ quyền bản thân; củng cố sự tự tin khi đối diện trực tiếp với hành vi sai trái.";
+                mi = 25.0; emp = 85.0; sup = 48.0;
+                socratic = "Cảm giác làm chủ không gian cá nhân lúc này mang lại cho bạn sự nhẹ nhõm và tự do như thế nào?";
+                defense = "Tôi hoàn toàn tôn trọng không gian của mình và từ chối tiếp nhận mọi năng lượng độc hại.";
+            } else if (lower.includes('nhân phẩm') || lower.includes('định đoạt') || lower.includes('lời đồn thổi vô căn cứ')) {
+                stageName = "GĐ 6: Miễn nhiễm độc hại tâm lý & Tự chủ vững bền";
+                behavior = "Củng cố nội lực vững chắc; duy trì trạng thái miễn nhiễm trước các tác nhân độc hại từ môi trường xung quanh.";
+                mi = 8.0; emp = 96.0; sup = 75.0;
+                socratic = "Việc giữ vững sự bình thản trước các tác nhân bên ngoài đã củng cố nội lực của bạn ra sao?";
+                defense = "Lời nói vô căn cứ không thể chạm tới nhân phẩm của tôi. Tôi duy trì sự bình thản và vững vàng.";
+            } else if (lower.includes('chia sẻ cách vượt qua') || lower.includes('bảo vệ những bạn đang bị trêu chọc')) {
+                stageName = "GĐ 7: Đủ vững vàng để nâng đỡ người khác (Lan tỏa & Bảo vệ)";
+                behavior = "Kết nối mạng lưới đồng đẳng; phát huy vai trò người dẫn dắt tích cực trong trường học.";
+                mi = 2.0; emp = 100.0; sup = 95.0;
+                socratic = "Việc chuyển hóa nỗi đau thành nguồn sức mạnh nâng đỡ người khác đã bồi đắp cho bạn bản lĩnh gì?";
+                defense = "Chúng ta cùng nhau xây dựng một môi trường học đường an toàn, tôn trọng và văn minh.";
+            } else {
+                stageName = "GĐ 4: Tỉnh thức nhưng chưa dám phản kháng (Hiểu rõ nhưng e ngại)";
+                behavior = "Trang bị kịch bản giao tiếp phản vệ (Defense Tips); rèn luyện sự bình tĩnh trước áp lực nhóm.";
+                mi = 45.0; emp = 68.0; sup = 25.0;
+                socratic = "Bạn đang cảm thấy điều gì cản trở bước tiến tiếp theo của mình?";
+                defense = "Tôi có quyền tự chủ và bảo vệ không gian an toàn của bản thân.";
+            }
+
+            document.getElementById('res-stage').textContent = stageName;
+            document.getElementById('res-behavior').textContent = behavior;
+            document.getElementById('res-mi').textContent = mi.toFixed(1) + "%";
+            document.getElementById('res-emp').textContent = emp.toFixed(1) + "%";
+            document.getElementById('res-sup').textContent = sup.toFixed(1) + "%";
+            document.getElementById('res-socratic').textContent = `\"${socratic}\"`;
+            document.getElementById('res-defense').textContent = `\"${defense}\"`;
+
+            dynamicChart.data.labels.push(`Phiên ${experimentLogs.length + 1}`);
+            dynamicChart.data.datasets[0].data.push(mi);
+            dynamicChart.data.datasets[1].data.push(emp);
+            dynamicChart.data.datasets[2].data.push(sup);
+            dynamicChart.update();
+
+            const logItem = {
+                stt: experimentLogs.length + 1,
+                stage: stageName,
+                mi: mi,
+                emp: emp,
+                sup: sup,
+                text: text
+            };
+            experimentLogs.push(logItem);
+            renderLogTable();
+        }
+
+        function renderLogTable() {
+            const tbody = document.getElementById('log-table-body');
+            tbody.innerHTML = "";
+            experimentLogs.forEach((log) => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-indigo-950/20 transition align-top">
+                        <td class="p-3 text-center font-bold text-indigo-400 whitespace-nowrap">${log.stt}</td>
+                        <td class="p-3 font-semibold text-indigo-300 whitespace-normal">${log.stage}</td>
+                        <td class="p-3 text-center text-rose-400 font-bold whitespace-nowrap">${log.mi}%</td>
+                        <td class="p-3 text-center text-emerald-400 font-bold whitespace-nowrap">${log.emp}%</td>
+                        <td class="p-3 text-center text-sky-400 font-bold whitespace-nowrap">${log.sup}%</td>
+                        <td class="p-3 italic text-slate-300 whitespace-normal break-words">${log.text}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function exportBaselineCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,Giai_Doan,Ten_Giai_Doan,Chi_So_MI,Tu_Chu,Ho_Tro_Cong_Dong,Vector_Prototype\n";
+            csvContent += `GĐ 1,"Bị thao túng nặng (Mất nhận thức ranh giới)",85-100%,0-15%,0%,"tất cả là lỗi của tôi, tôi kém cỏi, đáng bị chê bai"
+`;
+            csvContent += `GĐ 2,"Bị thao túng nhưng có ít ý thức (Nghi ngờ & Hoang mang)",65-84%,16-45%,0-10%,"tôi thấy hơi ấm ức hình như họ đang quá đáng"
+`;
+            csvContent += `GĐ 3,"Nhận diện ranh giới xâm phạm ngầm (Boundary Breach)",50-64%,46-60%,11-20%,"họ đang cố tình bêu rếu và hạ thấp mình sau lưng"
+`;
+            csvContent += `GĐ 4,"Tỉnh thức nhưng chưa dám phản kháng (Hiểu rõ nhưng e ngại)",40-49%,61-75%,21-30%,"tôi biết họ thao túng nhưng sợ lên tiếng bị cô lập"
+`;
+            csvContent += `GĐ 5,"Dám đứng lên nói (Thiết lập ranh giới chủ động)",12-39%,76-94%,31-65%,"tôi cảm thấy bản thân ổn rồi, biết cách từ chối"
+`;
+            csvContent += `GĐ 6,"Miễn nhiễm độc hại tâm lý & Tự chủ vững bền",5-11%,95-98%,66-85%,"nhân phẩm của tôi không bị định đoạt bởi lời đồn thổi"
+`;
+            csvContent += `GĐ 7,"Đủ vững vàng để nâng đỡ người khác (Lan tỏa & Bảo vệ)",0-4%,99-100%,86-100%,"tôi muốn chia sẻ cách vượt qua để bảo vệ bạn khác"
+`;
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "baseline_7_stages_model.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function exportDynamicCSV() {
+            if(experimentLogs.length === 0) {
+                alert("Chưa có dữ liệu nhật ký thực nghiệm để xuất!");
+                return;
+            }
+            let csvContent = "data:text/csv;charset=utf-8,STT,Stage,MI_Percent,Self_Empowerment,Community_Support,User_Text\n";
+            experimentLogs.forEach(log => {
+                csvContent += `${log.stt},"${log.stage}",${log.mi},${log.emp},${log.sup},"${log.text.replace(/"/g, '""')}"\n`;
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "student_experiment_log.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
